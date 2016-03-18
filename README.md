@@ -1,4 +1,4 @@
-# BOSH Release for java-jdk
+# BOSH Release for java-openjdk
 
 ## Usage
 
@@ -6,8 +6,8 @@ To use this bosh release, first upload it to your bosh:
 
 ```
 bosh target BOSH_HOST
-git clone https://github.com/cloudfoundry-community/java-jdk-boshrelease.git
-cd java-jdk-boshrelease
+git clone https://github.com/cloudfoundry-community/java-openjdk-boshrelease.git
+cd java-openjdk-boshrelease
 bosh upload release releases/java-jdk-1.yml
 ```
 

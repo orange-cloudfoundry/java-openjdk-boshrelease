@@ -29,8 +29,8 @@ networks:
 - name: java_jdk1
   type: manual
   subnets:
-  - range: 10.244.138.0/24
+  - range: 10.244.162.0/24
     name: java_jdk1
-    gateway: 10.244.138.1
+    gateway: 10.244.162.1
     static:
-      - 10.244.138.2 - 10.244.138.60
+      - 10.244.162.2 - 10.244.162.60

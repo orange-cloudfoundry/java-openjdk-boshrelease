@@ -1,0 +1,143 @@
+---
+#
+# Copyright (C) 2015 Orange
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+# http://www.apache.org/licenses/LICENSE-2.0
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+resource_types:
+- name: openjdk-resource
+  type: docker-image
+  source:
+    repository: orangeopensource/openjdk-resource
+
+resources:
+
+- name: java-openjdk-boshrelease
+  type: git
+  source:
+    uri: {{java-openjdk-boshrelease-git-url}}
+    branch: {{java-openjdk-boshrelease-git-branch}}
+
+- name: java-openjdk-boshrelease-master
+  type: git
+  source:
+    uri: {{java-openjdk-boshrelease-git-url}}
+    branch: {{java-openjdk-boshrelease-master-branch}}
+
+- name: openjdk
+  type: openjdk-resource
+  source:
+    platform: linux
+    fallback_url: http://www.java.net/download/jdk8u76/archive/b04/binaries/jdk-8u76-ea-bin-b04-linux-x64-25_jan_2016.tar.gz
+
+
+- name: boshrelease-version
+  type: semver
+  source:
+    bucket: {{aws-java-openjdk-candidate-bucket}}
+    key: current-version
+    initial_version: 1.0.0
+    access_key_id: {{aws-access-key-id}}
+    secret_access_key: {{aws-secret-access-key}}
+    region_name: {{aws-java-openjdk-region}}
+
+
+- name: bosh-final-release
+  type: s3
+  source:
+    bucket: {{aws-java-openjdk-bucket}}
+    regexp: java-openjdk-boshrelease-(.*).tgz
+    access_key_id: {{aws-access-key-id}}
+    secret_access_key: {{aws-secret-access-key}}
+    region_name: {{aws-java-openjdk-region}}
+
+- name: bosh-release-candidate
+  type: s3
+  source:
+    bucket: {{aws-java-openjdk-candidate-bucket}}
+    regexp: java-openjdk-boshrelease-(.*).tgz
+    access_key_id: {{aws-access-key-id}}
+    secret_access_key: {{aws-secret-access-key}}
+    region_name: {{aws-java-openjdk-region}}
+
+- name: java-openjdk-deployment
+  type: bosh-deployment
+  source:
+    target: {{bosh-deployment-target}}
+    username: {{bosh-deployment-user}}
+    password: {{bosh-deployment-password}}
+    deployment: java-openjdk-ci
+    ignore_ssl: true
+
+- name: resource-bosh-stemcell
+  type: bosh-io-stemcell
+  source:
+    name: {{bosh-stemcell-name}}
+
+- name: resource-manifests
+  type: git
+  source:
+    uri: {{resource-manifests-uri}}
+    skip_ssl_verification: {{resource-manifests-skip-ssl-verification}}
+    paths: [deployments/java-openjdk/java-openjdk-boshrelease]
+
+- name: bosh-credentials
+  type: git
+  source:
+    uri: {{bosh-credentials-uri}}
+    skip_ssl_verification: {{bosh-credentials-skip-ssl-verification}}
+    paths: [ci/config]
+
+jobs:
+
+- name: job-java-openjdk-boshrelease
+  plan:
+  - aggregate:
+    - get: openjdk
+      trigger: true
+      attempts: 3
+    - get: java-openjdk-boshrelease
+      trigger: true
+      attempts: 3
+    - get: boshrelease-version
+      params: {pre: rc}
+  - task: create-release-candidate
+    file: java-openjdk-boshrelease/ci/create-release-candidate.yml
+    config:
+      params:
+        GH_USER: {{github-username}}
+        GH_USER_EMAIL: {{github-email}}
+        GH_TOKEN: {{github-token}}
+  - put: bosh-release-candidate
+    params: {file: bosh-release-candidate/java-openjdk-boshrelease-*.tgz}
+  - put: boshrelease-version
+    params: {pre: rc}
+    attempt: 3
+
+
+- name: job-java-openjdk-boshrelease-deploy
+  plan:
+  - aggregate:
+    - get: bosh-release-candidate
+      passed: [job-java-openjdk-boshrelease]
+      trigger: true
+      attempts: 3
+    - get: resource-manifests
+      trigger: true
+      params: { submodules: none}
+      attempts: 3
+  - put: java-openjdk-deployment
+    params:
+      manifest: resource-manifests/deployments/java-openjdk-ci/java-openjdk-ci.yml
+      releases:
+      - bosh-release-candidate/*.tgz
+      stemcells: []
+      # - resource-bosh-stemcell/*.tgz
+    attempts: 10
