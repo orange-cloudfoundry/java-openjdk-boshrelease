@@ -21,14 +21,12 @@ image_resource:
 inputs:
 - name: java-openjdk-boshrelease
 - name: boshrelease-version
-- name: open-jdk
+- name: openjdk
 
 outputs:
 - name: bosh-release-candidate
 
 run:
   path: java-open-boshrelease/ci/create-release-candidate.sh
-
-params:
 
 

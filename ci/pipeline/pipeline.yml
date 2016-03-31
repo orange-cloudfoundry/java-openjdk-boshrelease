@@ -110,11 +110,10 @@ jobs:
       params: {pre: rc}
   - task: create-release-candidate
     file: java-openjdk-boshrelease/ci/create-release-candidate.yml
-    config:
-      params:
-        GH_USER: {{github-username}}
-        GH_USER_EMAIL: {{github-email}}
-        GH_TOKEN: {{github-token}}
+    params:
+      GH_USER: {{github-username}}
+      GH_USER_EMAIL: {{github-email}}
+      GH_TOKEN: {{github-token}}
   - put: bosh-release-candidate
     params: {file: bosh-release-candidate/java-openjdk-boshrelease-*.tgz}
   - put: boshrelease-version
