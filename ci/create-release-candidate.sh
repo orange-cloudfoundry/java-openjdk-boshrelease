@@ -19,7 +19,7 @@ OPENJDK_DIR="$PWD/openjdk"
 
 echo "DEBUG - OUTPUT: <$OUTPUT> - VERSION: <$VERSION>"
 
-pushd java-open-boshrelease
+pushd java-openjdk-boshrelease
   git config user.name "$GH_USER"
   git config user.email "$GH_USER_EMAIL"
   git config credential.helper "store --file=.git/credentials"
@@ -39,7 +39,7 @@ pushd java-open-boshrelease
 
 
   echo "Creating bosh release"
-  bosh -n create release --with-tarball --name java-openjdk-boshrelease --version "$VERSION"
+  bosh -n create release --with-tarball --name java-openjdk-boshrelease --version "$VERSION" --force
 
   echo "Moving to $OUTPUT"
   mv dev_releases/java-openjdk-boshrelease/java-openjdk-boshrelease-*.tgz "$OUTPUT"

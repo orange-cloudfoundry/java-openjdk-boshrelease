@@ -27,6 +27,6 @@ outputs:
 - name: bosh-release-candidate
 
 run:
-  path: java-open-boshrelease/ci/create-release-candidate.sh
+  path: java-openjdk-boshrelease/ci/create-release-candidate.sh
 
 
