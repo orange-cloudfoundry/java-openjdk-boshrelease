@@ -73,7 +73,7 @@ resources:
     target: {{bosh-deployment-target}}
     username: {{bosh-deployment-user}}
     password: {{bosh-deployment-password}}
-    deployment: java-openjdk-ci
+    deployment: java-openjdk-boshrelease-ci
     ignore_ssl: true
 
 - name: resource-bosh-stemcell
@@ -86,7 +86,7 @@ resources:
   source:
     uri: {{resource-manifests-uri}}
     skip_ssl_verification: {{resource-manifests-skip-ssl-verification}}
-    paths: [deployments/java-openjdk/java-openjdk-boshrelease]
+    paths: [deployments/java-openjdk-boshrelease-ci/]
 
 - name: bosh-credentials
   type: git
@@ -134,9 +134,42 @@ jobs:
       attempts: 3
   - put: java-openjdk-deployment
     params:
-      manifest: resource-manifests/deployments/java-openjdk-ci/java-openjdk-ci.yml
+      manifest: resource-manifests/deployments/java-openjdk-boshrelease-ci/java-openjdk-ci.yml
       releases:
       - bosh-release-candidate/*.tgz
       stemcells: []
       # - resource-bosh-stemcell/*.tgz
     attempts: 10
+
+- name: job-java-openjdk-boshrelease-final
+  plan:
+  - aggregate:
+    - get: bosh-release-candidate
+      passed: [job-java-openjdk-boshrelease-deploy]
+      trigger: true
+      attempts: 3
+    - get: java-openjdk-boshrelease
+      passed: [job-java-openjdk-boshrelease]
+      attempts: 3
+    - get: boshrelease-version
+      params: {bump: final}
+      attempts: 3
+    - get: bosh-credentials
+      trigger: true
+      params: { submodules: none}
+      attempts: 3
+  - task: finalize-release
+    file: java-openjdk-boshrelease/ci/finalize-release.yml
+    params:
+      GH_USER: {{github-username}}
+      GH_USER_EMAIL: {{github-email}}
+  - aggregate:
+#    - put: boshrelease-version
+#      params:
+    - put: java-openjdk-boshrelease-master
+      params:
+        repository: final-release-repo
+        tag: version/version
+        tag_prefix: v
+#    - put: bosh-final-release
+#      params: {file: bosh-final-release/elpaaso-sandbox-boshrelease-*.tgz}
