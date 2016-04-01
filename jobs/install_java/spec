@@ -2,4 +2,4 @@
 name: install_java
 packages:
   - openjdk
-templates: []
+templates:
