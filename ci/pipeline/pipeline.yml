@@ -73,7 +73,7 @@ resources:
     target: {{bosh-deployment-target}}
     username: {{bosh-deployment-user}}
     password: {{bosh-deployment-password}}
-    deployment: java-openjdk-boshrelease-ci
+    deployment: java-openjdk-ci
     ignore_ssl: true
 
 - name: resource-bosh-stemcell
