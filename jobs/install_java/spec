@@ -4,5 +4,6 @@ packages:
   - openjdk
 
 templates:
+  version.yml: config/version.yml
 
 properties: {}
