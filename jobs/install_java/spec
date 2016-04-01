@@ -6,4 +6,7 @@ packages:
 templates:
   version.yml: config/version.yml
 
-properties: {}
+properties:
+  java.version:
+    description: the java version
+    default: 1.8
