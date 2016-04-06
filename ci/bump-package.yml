@@ -31,4 +31,4 @@ params:
   PACKAGE_NAME:
 
 run:
-  path: boshrelease/ci/bump-package.sh
+  path: boshrelease-repo/ci/bump-package.sh
