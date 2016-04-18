@@ -1,1 +1,5 @@
---- {}
+---
+openjdk/openjdk.tar.gz:
+  object_id: d38bd9bf-7cbb-4a04-ae6a-b3b206a5d61a
+  sha: 9fc65908420c92047346e5bcc66fee0aad422c5e
+  size: 126476497
