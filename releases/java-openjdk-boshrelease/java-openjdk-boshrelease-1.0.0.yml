@@ -1,0 +1,20 @@
+---
+packages:
+- name: openjdk
+  version: dff078141d41e2efe9807ba109871d5dcd2c7517
+  fingerprint: dff078141d41e2efe9807ba109871d5dcd2c7517
+  sha1: dfcd166a5e6246801bce3d58c254ea420ae54050
+  dependencies: []
+jobs:
+- name: install_java
+  version: 02e5c459fc857e274091341c90d714c2defad2f0
+  fingerprint: 02e5c459fc857e274091341c90d714c2defad2f0
+  sha1: 79b36d73afe644c58d2a4f720d21510883fd8379
+license:
+  version: 5e71d0afb018164a8ba51ba393a905c5b7421735
+  fingerprint: 5e71d0afb018164a8ba51ba393a905c5b7421735
+  sha1: bc22a2521d0090a3878110044f6f189c1e764033
+commit_hash: 2478240c
+uncommitted_changes: false
+name: java-openjdk-boshrelease
+version: 1.0.0
